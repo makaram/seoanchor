@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SEO ANCHOR |Onpage SEO |Page Analyzer</title>
+    
+    <meta name="description" content="Seo anchor An online web page Analyzer that test your webpage and gives you a detailed report on what should be improved in your on page seo " >
+    <meta name="keywords" content="seoanchor,webpage  Analyzer,on page seo tool, on page seo">
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link 
+href="https://fonts.googleapis.com/css2?family=Oswald:
+wght@500&fam=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+<link rel="canonical" href="https://seoanchor.net/">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+<script>
+  function getPDF() {
+
+      var HTML_Width = $(".canvas_div_pdf").width();
+      var HTML_Height = $(".canvas_div_pdf").height();
+      var top_left_margin = 15;
+      var PDF_Width = HTML_Width + (top_left_margin * 2);
+      var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+      var canvas_image_width = HTML_Width;
+      var canvas_image_height = HTML_Height;
+
+      var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
+
+      html2canvas($(".canvas_div_pdf")[0], {
+         allowTaint: true
+      }).then(function(canvas) {
+         canvas.getContext('2d');
+
+         console.log(canvas.height + "  " + canvas.width);
+
+         var imgData = canvas.toDataURL("image/jpeg", 1.0);
+         var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+         pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+
+         for (var i = 1; i <= totalPDFPages; i++) {
+            pdf.addPage(PDF_Width, PDF_Height);
+            pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+         }
+
+         pdf.save("HTML-Document.pdf");
+      });
+   };
+</script>
+</head>
+  <body >
+<header class="container-fluid px-5"> 
+   <!-- <img src="images/seoanchor.png"  class='img-fluid'  alt="">
+-->
+<nav class="navbar navbar-expand-lg navbar-dark >
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><img src="images/seoanchor.png"  class='img-fluid'  height="100" width="250" alt=""></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link active" aria-current="page" href="tools.html">Tools</a>
+        <a class="nav-link active" href="contactus.html">Contact us</a>
+      </div>
+    </div>
+  </div>
+</nav>  </header>
+    <div class="container form_input rounded bg-white">
+      <form id="form" action="result.php" method="post">  
+      <div class="row py-5 mx-5 ">
+            <div class="col-12 col-md-6">
+              <input type="text" class="form-control bg-light py-2" name="domain" placeholder="Enter Domain " aria-label="Domain">
+            </div>
+            <div class="col-12 mt-md-0 mt-4 col-md-4">
+              <input type="Submit" class="btn-lg btn btn-primary px-5 rounded-pill" value="submit" name="submit" aria-label="submit">
+            </div>
+          </div>
+        </form>  
+    </div>
+    <div class='loader'>
+        <div class='loader--dot'></div>
+        <div class='loader--dot'></div>
+        <div class='loader--dot'></div>
+        <div class='loader--dot'></div>
+        <div class='loader--dot'></div>
+        <div class='loader--dot'></div>
+        <div class='loader--text'></div>
+    </div>
+    <div id="output" class="container my-5 px-0">
+
+    </div>
+    <footer class="bg-dark py-3">
+      <p class="text-center text-light">Version Alpha|Copyrights &copy; SMSANCHOR</p>
+    </footer>
+    <script>
+
+
+        function clearBox()
+{
+    document.getElementById('output').innerHTML = "";
+}
+        // Get the whole form, not the individual input-fields
+    const form = document.getElementById('form');
+    const loader = document.querySelector(".loader");
+    
+    // showing loading
+    function displayLoading() {
+        loader.classList.add("display");
+        // to stop loading after some time
+        setTimeout(() => {
+            loader.classList.remove("display");
+        }, 400000);
+    }
+    
+    // hiding loading 
+    function hideLoading() {
+        loader.classList.remove("display");
+    }
+    
+    /**
+     * Add an onclick-listener to the whole form, the callback-function
+     * will always know what you have clicked and supply your function with
+     * an event-object as first parameter, `addEventListener` creates this for us
+     */
+    form.addEventListener('submit', function(event) {
+        //Prevent the event from submitting the form, no redirect or page reload
+        displayLoading()
+        clearBox()    
+        event.preventDefault();
+        /**
+         * If we want to use every input-value inside of the form we can call
+         * `new FormData()` with the form we are submitting as an argument
+         * This will create a body-object that PHP can read properly
+         */
+        const formattedFormData = new FormData(form);
+        postData(formattedFormData);
+    });
+    
+    async function postData(formattedFormData) {
+        /**
+         * If we want to 'POST' something we need to change the `method` to 'POST'
+         * 'POST' also expectes the request to send along values inside of `body`
+         * so we must specify that property too. We use the earlier created 
+         * FormData()-object and just pass it along.
+         */
+        const response = await fetch('result.php', {
+            method: 'POST',
+            body: formattedFormData
+        });
+        /*
+         * Because we are using `echo` inside of `handle_form.php` the response
+         * will be a string and not JSON-data. Because of this we need to use
+         * `response.text()` instead of `response.json()` to convert it to someting
+         * that JavaScript understands
+         */
+        const data = await response.text();
+        //This should now print out the values that we sent to the backend-side
+        //alert(data);
+        //document.write(data);
+        document.getElementById("output").innerHTML = data;
+        hideLoading();
+        //grecaptcha.reset()
+    }
+        </script>
+         <script src="js/bootstrap.bundle.min.js"></script>          
+  </body>
+</html>
